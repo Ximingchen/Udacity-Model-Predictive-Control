@@ -290,20 +290,20 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	auto cost = solution.obj_value;
 	//std::cout << "Cost " << cost << std::endl;
 
+	
+  /**
+  Return the first actuator values. The variables can be accessed with `solution.x[i]`.
+   * {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
+   */
+  // the control we wanted to return are the delta_0 and a_0 
+  std::vector<double> res;
+  res.push_back(solution.x[delta_start]);
+  res.push_back(solution.x[a_start]);
 
-	/**
-	Return the first actuator values. The variables can be accessed with `solution.x[i]`.
-	* {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
-	*/
-	// the control we wanted to return are the delta_0 and a_0 
-	std::vector<double> res;
-	res.push_back(solution.x[delta_start]);
-	res.push_back(solution.x[a_start]);
-
-	// we can return additional information regarding the trajectories
-	for (unsigned int i = 1; i < N - 1; i++) {
-		res.push_back(solution.x[x_start + i]);
-		res.push_back(solution.x[y_start + i]);
-	}
-	return res;
+  // we can return additional information regarding the trajectories
+  for (unsigned int i = 0; i < N - 1; i++) {
+	  res.push_back(solution.x[x_start + i]);
+	  res.push_back(solution.x[y_start + i]);
+  }
+  return res;
 }
