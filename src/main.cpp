@@ -63,8 +63,8 @@ int main() {
 		  for (int i = 0; i < n_waypoints; i++) {
 			  double diff_x = ptsx[i] - px;
 			  double diff_y = ptsy[i] - py;
-			  waypoints_x(i) = diff_x * cos(0 - psi) - diff_y * sin(0 - psi);
-			  waypoints_y(i) = diff_x * sin(0 - psi) + diff_y * cos(0 - psi);
+			  waypoints_x(i) = diff_x * cos(- psi) - diff_y * sin(- psi);
+			  waypoints_y(i) = diff_x * sin(- psi) + diff_y * cos(- psi);
 		  }
 
 		  // fit a third order polynomial to the waypoints defined in the carframe
@@ -82,14 +82,14 @@ int main() {
 
 		  vector<double> info = mpc.Solve(state, coeffs);
 
-		  double steer_value = -info[0]; // steering is opposite in simulator control
+		  double steer_value = info[0];
 		  double throttle_value = info[1];
           
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the 
           //   steering value back. Otherwise the values will be in between 
           //   [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value;
+          msgJson["steering_angle"] = steer_value / (deg2rad(25));
           msgJson["throttle"] = throttle_value;
 
           // Display the MPC predicted trajectory 

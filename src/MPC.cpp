@@ -39,9 +39,7 @@ double dt = 0.1;
 */
 const double Lf = 2.67;
 
-const double ref_cte = 0;
-const double ref_epsi = 0;
-const double ref_v = 100;
+const double ref_v = 70;
 
 // according to the definition of vars
 size_t x_start = 0;
