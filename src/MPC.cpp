@@ -152,7 +152,6 @@ MPC::~MPC() {}
 
 std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::VectorXd &coeffs) {
 	bool ok = true;
-	size_t i;
 	typedef CPPAD_TESTVECTOR(double) Dvector;
 
 	double x = state[0];
@@ -174,7 +173,7 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	// Initial value of the independent variables.
 	// SHOULD BE 0 besides initial state.
 	Dvector vars(n_vars);
-	for (int i = 0; i < n_vars; i++) {
+	for (unsigned int i = 0; i < n_vars; i++) {
 		vars[i] = 0;
 	}
 
