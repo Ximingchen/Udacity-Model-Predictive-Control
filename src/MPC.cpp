@@ -39,7 +39,7 @@ double dt = 0.1;
 */
 const double Lf = 2.67;
 
-const double ref_v = 100;
+const double ref_v = 70;
 
 // according to the definition of vars
 size_t x_start = 0;
@@ -67,9 +67,9 @@ class FG_eval {
 
 	  /* Cost function */
 
-	  std::vector<double> weight_state{1000.0, 1000.0, 1.0};// penalizing large cte, penalizing large angle eroror , penalizing losing reference to the preset speed
-	  std::vector<double> weight_actuator{200.0, 5.0}; // penalizing steering, penalizing using throttle
-	  std::vector<double> weight_gap{250.0, 50.0}; // penlizing using large steering angles, penalizing using adrupt breaks
+	  std::vector<double> weight_state{4000.0, 5000.0, 1.0};// penalizing large cte, penalizing large angle eroror , penalizing losing reference to the preset speed
+	  std::vector<double> weight_actuator{10.0, 5.0}; // penalizing steering, penalizing using throttle
+	  std::vector<double> weight_gap{250.0, 10.0}; // penlizing using large steering angles, penalizing using adrupt breaks
 
 	  // the above part can be tuned
 	  for (unsigned int t = 0; t < N; t++) {
