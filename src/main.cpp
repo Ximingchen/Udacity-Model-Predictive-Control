@@ -78,11 +78,11 @@ int main() {
 		  
 		  // the initial state of current equals to the following
 		  Eigen::VectorXd state(6);
-		  state << 0.0, 0.0, 0.0, v, cte, epsi;
+		  state << 0, 0, 0, v, cte, epsi;
 
 		  vector<double> info = mpc.Solve(state, coeffs);
 
-		  double steer_value = info[0]/deg2rad(25);
+		  double steer_value = info[0]/(deg2rad(25));
 		  double throttle_value = info[1];
           
           json msgJson;
@@ -116,7 +116,7 @@ int main() {
            add (x,y) points to list here, points are in reference to the vehicle's coordinate system the points in the simulator are connected by a Yellow line
            */
 
-		  double d_x = 2;
+		  double d_x = 2.0;
 		  int num_ref_pts = 25;
 		  for (unsigned int i = 0; i < num_ref_pts; i++) {
 			  next_x_vals.push_back(i*d_x);

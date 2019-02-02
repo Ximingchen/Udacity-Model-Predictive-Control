@@ -140,10 +140,10 @@ class FG_eval {
 		  // epsi[t] = psi[t] - psides[t-1] + v[t-1] * delta[t-1] / Lf * dt
 		  fg[1 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
 		  fg[1 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
-		  fg[1 + psi_start + t] = psi1 - (psi0 + v0 * delta0 / Lf * dt);
+		  fg[1 + psi_start + t] = psi1 - (psi0 - v0/Lf * delta0 * dt);
 		  fg[1 + v_start + t] = v1 - (v0 + a0 * dt);
 		  fg[1 + cte_start + t] = cte1 - ((f0 - y0) + (v0 * CppAD::sin(epsi0) * dt));
-		  fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) + v0 * delta0 / Lf * dt);		  
+		  fg[1 + epsi_start + t] = epsi1 - ((psi0 - psides0) - v0 / Lf * delta0 * dt);		  
 	  }
   }
 };
@@ -184,6 +184,13 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
     vars[i] = 0;
   }
 
+  vars[x_start] = x;
+  vars[y_start] = y;
+  vars[psi_start] = psi;
+  vars[v_start] = v;
+  vars[cte_start] = cte;
+  vars[epsi_start] = epsi;
+
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
   /**
@@ -197,8 +204,8 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
   }
 	//   We set the limits for the delta to be within -25 to 25
   for (unsigned int i = delta_start; i < a_start; ++i) {
-	  vars_lowerbound[i] = -0.436332 * Lf;
-	  vars_upperbound[i] = 0.436332 * Lf;
+	  vars_lowerbound[i] = -0.436332;
+	  vars_upperbound[i] = 0.436332;
   }
   // next we set the limits of a to be witin a certain range
 
