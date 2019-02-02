@@ -82,7 +82,7 @@ int main() {
 
 		  vector<double> info = mpc.Solve(state, coeffs);
 
-		  double steer_value = -info[0] / (deg2rad(25));
+		  double steer_value = info[0]/deg2rad(25);
 		  double throttle_value = info[1];
           
           json msgJson;
@@ -116,8 +116,8 @@ int main() {
            add (x,y) points to list here, points are in reference to the vehicle's coordinate system the points in the simulator are connected by a Yellow line
            */
 
-		  double d_x = 3;
-		  int num_ref_pts = 50;
+		  double d_x = 2;
+		  int num_ref_pts = 25;
 		  for (unsigned int i = 0; i < num_ref_pts; i++) {
 			  next_x_vals.push_back(i*d_x);
 			  next_y_vals.push_back(polyeval(coeffs, i*d_x));
