@@ -283,7 +283,7 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
    * {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
    */
   // the control we wanted to return are the delta_0 and a_0 
-  vector<double> res;
+  std::vector<double> res;
   res.push_back(solution.x[delta_start]);
   res.push_back(solution.x[a_start]);
 
