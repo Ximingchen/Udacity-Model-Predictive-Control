@@ -59,7 +59,7 @@ public:
 
 		/* Cost function */
 
-		double pen_cte = 2000.0; // penalizing large cte, penalizing large angle eroror , penalizing losing reference to the preset speed
+		double pen_cte = 2500.0; // penalizing large cte, penalizing large angle eroror , penalizing losing reference to the preset speed
 		double pen_angle = 2000.0;
 		double pen_speed = 1.0;
 		double pen_steering = 5.0;
@@ -193,7 +193,7 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	*/
 	// Set all non-actuators upper and lowerlimits
 	// to the max negative and positive values.
-	for (int i = 0; i < delta_start; i++) {
+	for (unsigned int i = 0; i < delta_start; i++) {
 		vars_lowerbound[i] = -1.0e19;
 		vars_upperbound[i] = 1.0e19;
 	}
@@ -201,14 +201,14 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	// The upper and lower limits of delta are set to -25 and 25
 	// degrees (values in radians).
 	// NOTE: Feel free to change this to something else.
-	for (int i = delta_start; i < a_start; i++) {
+	for (unsigned int i = delta_start; i < a_start; i++) {
 		vars_lowerbound[i] = -0.436332;
 		vars_upperbound[i] = 0.436332;
 	}
 
 	// Acceleration/decceleration upper and lower limits.
 	// NOTE: Feel free to change this to something else.
-	for (int i = a_start; i < n_vars; i++) {
+	for (unsigned int i = a_start; i < n_vars; i++) {
 		vars_lowerbound[i] = -1.0;
 		vars_upperbound[i] = 1.0;
 	}
@@ -217,7 +217,7 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	// Should be 0 besides initial state.
 	Dvector constraints_lowerbound(n_constraints);
 	Dvector constraints_upperbound(n_constraints);
-	for (int i = 0; i < n_constraints; i++) {
+	for (unsigned int i = 0; i < n_constraints; i++) {
 		constraints_lowerbound[i] = 0;
 		constraints_upperbound[i] = 0;
 	}
@@ -239,28 +239,14 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	constraints_lowerbound[epsi_start] = epsi; // initial state for epsi
 	constraints_upperbound[epsi_start] = epsi;
 
-	/*
-	constraints_lowerbound[x_start] = x;
-	constraints_lowerbound[y_start] = y;
-	constraints_lowerbound[psi_start] = psi;
-	constraints_lowerbound[v_start] = v;
-	constraints_lowerbound[cte_start] = cte;
-	constraints_lowerbound[epsi_start] = epsi;
-
-	constraints_upperbound[x_start] = x;
-	constraints_upperbound[y_start] = y;
-	constraints_upperbound[psi_start] = psi;
-	constraints_upperbound[v_start] = v;
-	constraints_upperbound[cte_start] = cte;
-	constraints_upperbound[epsi_start] = epsi;
-	*/
+	
 	// object that computes objective and constraints
 	FG_eval fg_eval(coeffs);
 
 	//
 	// NOTE: You don't have to worry about these options
 	//
-	// options for IPOPT solver
+		// options for IPOPT solver
 	std::string options;
 	// Uncomment this if you'd like more print information
 	options += "Integer print_level  0\n";
@@ -274,36 +260,31 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	// NOTE: Currently the solver has a maximum time limit of 0.5 seconds.
 	// Change this as you see fit.
 	options += "Numeric max_cpu_time          0.5\n";
-
 	// place to return solution
 	CppAD::ipopt::solve_result<Dvector> solution;
-
 	// solve the problem
 	CppAD::ipopt::solve<Dvector, FG_eval>(
 		options, vars, vars_lowerbound, vars_upperbound, constraints_lowerbound,
 		constraints_upperbound, fg_eval, solution);
-
 	// Check some of the solution values
 	ok &= solution.status == CppAD::ipopt::solve_result<Dvector>::success;
-
 	// Cost
-	auto cost = solution.obj_value;
-	//std::cout << "Cost " << cost << std::endl;
+	//	auto cost = solution.obj_value;
+		//std::cout << "Cost " << cost << std::endl;
 
 	
-  /**
-  Return the first actuator values. The variables can be accessed with `solution.x[i]`.
-   * {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
-   */
-  // the control we wanted to return are the delta_0 and a_0 
-  std::vector<double> res;
-  res.push_back(solution.x[delta_start]);
-  res.push_back(solution.x[a_start]);
-
-  // we can return additional information regarding the trajectories
-  for (unsigned int i = 0; i < N - 1; i++) {
-	  res.push_back(solution.x[x_start + i]);
-	  res.push_back(solution.x[y_start + i]);
-  }
-  return res;
+	 /**
+	 Return the first actuator values. The variables can be accessed with `solution.x[i]`.
+	  * {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
+	  */
+	 // the control we wanted to return are the delta_0 and a_0 
+	 std::vector<double> res;
+	 res.push_back(solution.x[delta_start]);
+	 res.push_back(solution.x[a_start]);
+	 // we can return additional information regarding the trajectories
+	 for (unsigned int i = 0; i < N - 1; i++) {
+		res.push_back(solution.x[x_start + i]);
+		res.push_back(solution.x[y_start + i]);
+	 }
+	 return res;
 }
