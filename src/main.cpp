@@ -46,7 +46,8 @@ int main() {
 					double py = j[1]["y"];
 					double psi = j[1]["psi"];
 					double v = j[1]["speed"];
-
+					double delta = j[1]["steering_angle"];
+					double a = j[1]["throttle"];
 					/**
 					Calculate steering angle and throttle using MPC. Both are in between [-1, 1].
 					*/
@@ -76,8 +77,32 @@ int main() {
 					double epsi = -atan(coeffs[1]);  // this is because target angle psi equals to 0 and f(x) = coeff[1] + coeff[2] * x + coeff[3]*x*x with x equals to 0 in the car frame
 
 													 // the initial state of current equals to the following
+					
+					// considering taking into account simulator latency
+					/* More specifically, the model is as follows:
+					x_t+1 = x_t + v_t * cos(phi_t) * dt
+					y_t+1 = y_t + v_t * sin(phi_t) * dt
+					phi_t+1 = phi_t + v_t/L_f * delta_t * dt
+					v_t+1 = v_t + a_t * d_t
+					cte_t+1 = f(x_t) - y_t + v_t*sin(ephi_t) * dt
+					ephi_t+1 = phi_t - phidest_t + v_t/L_f*delta_t *dt
+
+					x0 is the initial state [x ,y , \psi, v, cte, e\psi],
+					coeffs are the coefficients of the fitting polynomial.
+					The bulk of this method is setting up the vehicle model constraints (constraints) and variables (vars) for Ipopt.
+					*/
+					const double Lf = 2.67;
+					const double dt = 0.1;
+					double x1 = v * dt; 
+					double y1 = 0.0; 
+					double psi1 = -v/Lf * delta * dt;
+					double v1 = v + a * dt;
+					double cte1 = cte + v * sin(epsi) * dt;
+					double epsi1 = epsi - v / Lf * delta * dt;
+
+					// Feed in the predicted state values
 					Eigen::VectorXd state(6);
-					state << 0, 0, 0, v, cte, epsi;
+					state << x1, y1, psi1, v1, cte1, epsi1;
 
 					vector<double> info = mpc.Solve(state, coeffs);
 
