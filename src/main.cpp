@@ -63,8 +63,8 @@ int main() {
 		  for (int i = 0; i < n_waypoints; i++) {
 			  double diff_x = ptsx[i] - px;
 			  double diff_y = ptsy[i] - py;
-			  waypoints_x(i) = diff_x * cos(- psi) - diff_y * sin(- psi);
-			  waypoints_y(i) = diff_x * sin(- psi) + diff_y * cos(- psi);
+			  waypoints_x(i) = diff_x * cos(-psi) - diff_y * sin(-psi);
+			  waypoints_y(i) = diff_x * sin(-psi) + diff_y * cos(-psi);
 		  }
 
 		  // fit a third order polynomial to the waypoints defined in the carframe
@@ -82,14 +82,14 @@ int main() {
 
 		  vector<double> info = mpc.Solve(state, coeffs);
 
-		  double steer_value = -info[0];
+		  double steer_value = -info[0] / (deg2rad(25));
 		  double throttle_value = info[1];
           
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the 
           //   steering value back. Otherwise the values will be in between 
           //   [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value / (deg2rad(25));
+          msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = throttle_value;
 
           // Display the MPC predicted trajectory 
@@ -116,10 +116,11 @@ int main() {
            add (x,y) points to list here, points are in reference to the vehicle's coordinate system the points in the simulator are connected by a Yellow line
            */
 
-		  double N_reference_points = 100, gap = 2;
-		  for (double i = 0; i < N_reference_points; i += gap) {
-			  next_x_vals.push_back(i);
-			  next_y_vals.push_back(polyeval(coeffs, i));
+		  double d_x = 3;
+		  int num_ref_pts = 50;
+		  for (unsigned int i = 0; i < num_ref_pts; i++) {
+			  next_x_vals.push_back(i*d_x);
+			  next_y_vals.push_back(polyeval(coeffs, i*d_x));
 		  }
 
 

@@ -39,7 +39,7 @@ double dt = 0.1;
 */
 const double Lf = 2.67;
 
-const double ref_v = 70;
+const double ref_v = 100;
 
 // according to the definition of vars
 size_t x_start = 0;
@@ -183,14 +183,6 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
   for (unsigned int i = 0; i < n_vars; ++i) {
     vars[i] = 0;
   }
-  
-  // Set the initial variable values associated with states
-  vars[x_start] = x;
-  vars[y_start] = y;
-  vars[psi_start] = psi;
-  vars[v_start] = v;
-  vars[cte_start] = cte;
-  vars[epsi_start] = epsi;
 
   Dvector vars_lowerbound(n_vars);
   Dvector vars_upperbound(n_vars);
@@ -205,8 +197,8 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
   }
 	//   We set the limits for the delta to be within -25 to 25
   for (unsigned int i = delta_start; i < a_start; ++i) {
-	  vars_lowerbound[i] = -0.436332;
-	  vars_upperbound[i] = 0.436332;
+	  vars_lowerbound[i] = -0.436332 * Lf;
+	  vars_upperbound[i] = 0.436332 * Lf;
   }
   // next we set the limits of a to be witin a certain range
 
