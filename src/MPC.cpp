@@ -257,7 +257,7 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	//
 	// {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
 	// creates a 2 element double vector.
-	vector<double> result;
+	std::vector<double> result;
 
 	result.push_back(solution.x[delta_start]);
 	result.push_back(solution.x[a_start]);
