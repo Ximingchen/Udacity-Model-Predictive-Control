@@ -39,7 +39,7 @@ double dt = 0.1;
 */
 const double Lf = 2.67;
 
-const double ref_v = 70;
+const double ref_v = 80;
 
 // according to the definition of vars
 size_t x_start = 0;
@@ -67,27 +67,31 @@ class FG_eval {
 
 	  /* Cost function */
 
-	  std::vector<double> weight_state{4000.0, 5000.0, 1.0};// penalizing large cte, penalizing large angle eroror , penalizing losing reference to the preset speed
-	  std::vector<double> weight_actuator{10.0, 5.0}; // penalizing steering, penalizing using throttle
-	  std::vector<double> weight_gap{250.0, 10.0}; // penlizing using large steering angles, penalizing using adrupt breaks
+	  double pen_cte = 4000.0; // penalizing large cte, penalizing large angle eroror , penalizing losing reference to the preset speed
+	  double pen_angle = 4000.0;
+	  double pen_speed = 1.0;
+	  double pen_steering = 5.0;
+	  double pen_throttle = 5.0; // penalizing steering, penalizing using throttle
+	  double pen_st_angle = 200.0; // penlizing using large steering angles
+	  double pen_break = 10.0; // penalizing using adrupt breaks
 
 	  // the above part can be tuned
 	  for (unsigned int t = 0; t < N; t++) {
-		  fg[0] += weight_state[0] * CppAD::pow(vars[cte_start + t], 2);
-		  fg[0] += weight_state[1] * CppAD::pow(vars[epsi_start + t], 2);
-		  fg[0] += weight_state[2] * CppAD::pow(vars[v_start + t] - ref_v, 2);
+		  fg[0] += pen_cte * CppAD::pow(vars[cte_start + t], 2);
+		  fg[0] += pen_angle * CppAD::pow(vars[epsi_start + t], 2);
+		  fg[0] += pen_speed * CppAD::pow(vars[v_start + t] - ref_v, 2);
 	  }
 
 	  // Minimize the use of actuators.
 	  for (unsigned int t = 0; t < N - 1; t++) {
-		  fg[0] += weight_actuator[0] * CppAD::pow(vars[delta_start + t], 2);
-		  fg[0] += weight_actuator[1] * CppAD::pow(vars[a_start + t], 2);
+		  fg[0] += pen_steering * CppAD::pow(vars[delta_start + t], 2);
+		  fg[0] += pen_throttle * CppAD::pow(vars[a_start + t], 2);
 	  }
 
 	  // Minimize the value gap between sequential actuations.
 	  for (unsigned int t = 0; t < N - 2; t++) {
-		  fg[0] += weight_gap[0] * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
-		  fg[0] += weight_gap[1] * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+		  fg[0] += pen_st_angle * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+		  fg[0] += pen_break * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
 	  }
 
 	  //
