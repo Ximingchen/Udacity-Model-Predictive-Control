@@ -162,13 +162,13 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	double cte = state[4];
 	double epsi = state[5];
 
-	// TODO: Set the number of model variables (includes both states and inputs).
-	// For example: If the state is a 4 element vector, the actuators is a 2
-	// element vector and there are 10 timesteps. The number of variables is:
-	//
-	// 4 * 10 + 2 * 9
+	/**
+	Set the number of model variables (includes both states and inputs).
+	* For example: If the state is a 4 element vector, the actuators is a 2
+	*   element vector and there are 10 timesteps. The number of variables is:
+	*   4 * 10 + 2 * 9
+	*/
 	size_t n_vars = N * 6 + (N - 1) * 2;
-	// TODO: Set the number of constraints
 	size_t n_constraints = N * 6;
 
 	// Initial value of the independent variables.
@@ -180,7 +180,7 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 
 	Dvector vars_lowerbound(n_vars);
 	Dvector vars_upperbound(n_vars);
-	// TODO: Set lower and upper limits for variables.
+	// Set lower and upper limits for variables.
 
 	// Set the initial variable values
 	/*
@@ -222,6 +222,25 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 		constraints_upperbound[i] = 0;
 	}
 	constraints_lowerbound[x_start] = x;
+	constraints_upperbound[x_start] = x;//initial state for x position
+
+	constraints_lowerbound[y_start] = y;// initial staet for y position
+	constraints_upperbound[y_start] = y;
+
+	constraints_lowerbound[psi_start] = psi; // initial state for psi
+	constraints_upperbound[psi_start] = psi;
+
+	constraints_lowerbound[v_start] = v; //initial state for speed/velocity
+	constraints_upperbound[v_start] = v;
+
+	constraints_lowerbound[cte_start] = cte; // initial state for cte
+	constraints_upperbound[cte_start] = cte;
+
+	constraints_lowerbound[epsi_start] = epsi; // initial state for epsi
+	constraints_upperbound[epsi_start] = epsi;
+
+	/*
+	constraints_lowerbound[x_start] = x;
 	constraints_lowerbound[y_start] = y;
 	constraints_lowerbound[psi_start] = psi;
 	constraints_lowerbound[v_start] = v;
@@ -234,7 +253,7 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	constraints_upperbound[v_start] = v;
 	constraints_upperbound[cte_start] = cte;
 	constraints_upperbound[epsi_start] = epsi;
-
+	*/
 	// object that computes objective and constraints
 	FG_eval fg_eval(coeffs);
 
@@ -271,20 +290,20 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	auto cost = solution.obj_value;
 	//std::cout << "Cost " << cost << std::endl;
 
-	// TODO: Return the first actuator values. The variables can be accessed with
-	// `solution.x[i]`.
-	//
-	// {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
-	// creates a 2 element double vector.
-	std::vector<double> result;
 
-	result.push_back(solution.x[delta_start]);
-	result.push_back(solution.x[a_start]);
+	/**
+	Return the first actuator values. The variables can be accessed with `solution.x[i]`.
+	* {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
+	*/
+	// the control we wanted to return are the delta_0 and a_0 
+	std::vector<double> res;
+	res.push_back(solution.x[delta_start]);
+	res.push_back(solution.x[a_start]);
 
-	for (int i = 0; i < N - 1; i++) {
-		result.push_back(solution.x[x_start + i]);
-		result.push_back(solution.x[y_start + i]);
+	// we can return additional information regarding the trajectories
+	for (unsigned int i = 1; i < N - 1; i++) {
+		res.push_back(solution.x[x_start + i]);
+		res.push_back(solution.x[y_start + i]);
 	}
-
-	return result;
+	return res;
 }
