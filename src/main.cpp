@@ -82,7 +82,7 @@ int main() {
 
 		  vector<double> info = mpc.Solve(state, coeffs);
 
-		  double steer_value = info[0];
+		  double steer_value = -info[0];
 		  double throttle_value = info[1];
           
           json msgJson;
