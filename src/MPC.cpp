@@ -75,20 +75,20 @@ class FG_eval {
 	  std::vector<double> weight_gap{300.0, 10.0};
 
 	  // the above part can be tuned
-	  for (int t = 0; t < N; t++) {
+	  for (unsigned int t = 0; t < N; t++) {
 		  fg[0] += weight_state[0] * CppAD::pow(vars[cte_start + t], 2);
 		  fg[0] += weight_state[1] * CppAD::pow(vars[epsi_start + t], 2);
 		  fg[0] += weight_state[2] * CppAD::pow(vars[v_start + t] - ref_v, 2);
 	  }
 
 	  // Minimize the use of actuators.
-	  for (int t = 0; t < N - 1; t++) {
+	  for (unsigned int t = 0; t < N - 1; t++) {
 		  fg[0] += weight_actuator[0] * CppAD::pow(vars[delta_start + t], 2);
-		  fg[0] += weigth_actuator[1] * CppAD::pow(vars[a_start + t], 2);
+		  fg[0] += weight_actuator[1] * CppAD::pow(vars[a_start + t], 2);
 	  }
 
 	  // Minimize the value gap between sequential actuations.
-	  for (int t = 0; t < N - 2; t++) {
+	  for (unsigned int t = 0; t < N - 2; t++) {
 		  fg[0] += weight_gap[0] * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
 		  fg[0] += weight_gap[1] * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
 	  }
@@ -106,7 +106,7 @@ class FG_eval {
 	  fg[1 + cte_start] = vars[cte_start];
 	  fg[1 + epsi_start] = vars[epsi_start];
 
-	  for (int t = 1; t < N; ++t) {
+	  for (unsigned int t = 1; t < N; ++t) {
 		  // The state at time t+1 .
 		  AD<double> x1 = vars[x_start + t];
 		  AD<double> y1 = vars[y_start + t];
@@ -183,7 +183,7 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
   // Initial value of the independent variables.
   // SHOULD BE 0 besides initial state.
   Dvector vars(n_vars);
-  for (int i = 0; i < n_vars; ++i) {
+  for (unsigned int i = 0; i < n_vars; ++i) {
     vars[i] = 0;
   }
   
@@ -202,18 +202,18 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
 
    */
   // we set unconstrained vaiables to large numbers
-  for (int i = 0; i < delta_start; i++) {
+  for (unsigned int i = 0; i < delta_start; i++) {
 	  vars_lowerbound[i] = -1.0e19;
 	  vars_upperbound[i] = 1.0e19;
   }
 	//   We set the limits for the delta to be within -25 to 25
-  for (int i = delta_start; i < a_start; ++i) {
+  for (unsigned int i = delta_start; i < a_start; ++i) {
 	  vars_lowerbound[i] = -0.436332;
 	  vars_upperbound[i] = 0.436332;
   }
   // next we set the limits of a to be witin a certain range
 
-  for (int i = a_start; i < n_vars; i++) {
+  for (unsigned int i = a_start; i < n_vars; i++) {
 	  vars_lowerbound[i] = -1.0;
 	  vars_upperbound[i] = 1.0;
   }
@@ -222,7 +222,7 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
   // Should be 0 besides initial state.
   Dvector constraints_lowerbound(n_constraints);
   Dvector constraints_upperbound(n_constraints);
-  for (int i = 0; i < n_constraints; ++i) {
+  for (unsigned int i = 0; i < n_constraints; ++i) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
@@ -288,7 +288,7 @@ std::vector<double> MPC::Solve(const VectorXd &state, const VectorXd &coeffs) {
   res.push_back(solution.x[a_start]);
 
   // we can return additional information regarding the trajectories
-  for (int i = 1; i < N - 1; i++) {
+  for (unsigned int i = 1; i < N - 1; i++) {
 	  res.push_back(solution.x[x_start + i]);
 	  res.push_back(solution.x[y_start + i]);
   }
