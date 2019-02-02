@@ -165,13 +165,14 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	// TODO: Set lower and upper limits for variables.
 
 	// Set the initial variable values
+	/*
 	vars[x_start] = x;
 	vars[y_start] = y;
 	vars[psi_start] = psi;
 	vars[v_start] = v;
 	vars[cte_start] = cte;
 	vars[epsi_start] = epsi;
-
+	*/
 	// Set all non-actuators upper and lowerlimits
 	// to the max negative and positive values.
 	for (int i = 0; i < delta_start; i++) {
@@ -263,8 +264,8 @@ std::vector<double> MPC::Solve(const Eigen::VectorXd &state, const Eigen::Vector
 	result.push_back(solution.x[a_start]);
 
 	for (int i = 0; i < N - 1; i++) {
-		result.push_back(solution.x[x_start + i + 1]);
-		result.push_back(solution.x[y_start + i + 1]);
+		result.push_back(solution.x[x_start + i]);
+		result.push_back(solution.x[y_start + i]);
 	}
 
 	return result;
