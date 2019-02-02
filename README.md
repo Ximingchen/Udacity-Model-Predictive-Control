@@ -15,6 +15,8 @@ Step 2 - Tuning parameters in the MPC. More specifically, the parameters include
 
 Hereafter, we discuss the above two steps in more details.
 
+![alt text](https://github.com/Ximingchen/Udacity-Model-Predictive-Control/blob/master/images/badperformance.png)
+![alt_text](https://github.com/Ximingchen/Udacity-Model-Predictive-Control/blob/master/images/model.png)
 
 
 
