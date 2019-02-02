@@ -70,9 +70,9 @@ class FG_eval {
 	  /* Cost function */
 
 	  // The part of the cost based on the reference state.
-	  vector<double> weight_state{2000.0, 2000.0, 1.0};
-	  vector<double> weight_actuator{50.0, 50.0};
-	  vector<double> weight_gap{300.0, 10.0};
+	  std::vector<double> weight_state{2000.0, 2000.0, 1.0};
+	  std::vector<double> weight_actuator{50.0, 50.0};
+	  std::vector<double> weight_gap{300.0, 10.0};
 
 	  // the above part can be tuned
 	  for (int t = 0; t < N; t++) {
