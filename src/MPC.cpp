@@ -51,20 +51,20 @@ public:
 		// TODO: Define the cost related the reference state and
 		// any anything you think may be beneficial.
 		for (int i = 0; i < N; i++) {
-			fg[0] += 3000 * CppAD::pow(vars[cte_start + i], 2);
-			fg[0] += 3000 * CppAD::pow(vars[epsi_start + i], 2);
+			fg[0] += 2000 * CppAD::pow(vars[cte_start + i], 2);
+			fg[0] += 2000 * CppAD::pow(vars[epsi_start + i], 2);
 			fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
 		}
 
 		for (int i = 0; i < N - 1; i++) {
-			fg[0] += 5 * CppAD::pow(vars[delta_start + i], 2);
-			fg[0] += 5 * CppAD::pow(vars[a_start + i], 2);
+			fg[0] += 10 * CppAD::pow(vars[delta_start + i], 2);
+			fg[0] += 10 * CppAD::pow(vars[a_start + i], 2);
 			// try adding penalty for speed + steer
-			fg[0] += 700 * CppAD::pow(vars[delta_start + i] * vars[v_start + i], 2);
+			//fg[0] += 700 * CppAD::pow(vars[delta_start + i] * vars[v_start + i], 2);
 		}
 
 		for (int i = 0; i < N - 2; i++) {
-			fg[0] += 200 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
+			fg[0] += 100 * CppAD::pow(vars[delta_start + i + 1] - vars[delta_start + i], 2);
 			fg[0] += 10 * CppAD::pow(vars[a_start + i + 1] - vars[a_start + i], 2);
 		}
 
