@@ -51,8 +51,8 @@ public:
 		// TODO: Define the cost related the reference state and
 		// any anything you think may be beneficial.
 		for (int i = 0; i < N; i++) {
-			fg[0] += 2000 * CppAD::pow(vars[cte_start + i], 2);
-			fg[0] += 2000 * CppAD::pow(vars[epsi_start + i], 2);
+			fg[0] += 200 * CppAD::pow(vars[cte_start + i], 2);
+			fg[0] += 200 * CppAD::pow(vars[epsi_start + i], 2);
 			fg[0] += CppAD::pow(vars[v_start + i] - ref_v, 2);
 		}
 
