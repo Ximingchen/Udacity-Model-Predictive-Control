@@ -28,7 +28,21 @@ In this project, we use the following objective function
 
 Essentially, we minimize the accumulated predicted cross track error and orienation error over the H horizons. Moreover, we penalize using large and constant steering/throttling. Finally, we ensure that the control gives us ``smooth'' trajectories by penalizing any adrupt change in steering angles as well as hard push of the throttle or gas paddle. 
 
+The constraint of this model are: (i) the constraints imposed by the dynamical update equation in the first figure, and (ii) the limits of steering angle and throttle inputs. We set the steering angle to be within [-25, 25] degrees, and enforce that the throttle input to be within [-1, 1].
+
+The horizon is set to be 10 and the discretization step is set to be 0.1 second. The main reason behind selecting these two parameter is two-fold. First, on one hand, we want to ensure that the discritized dynamical model captures the real continuous model well, subsequently, we should not use large discretization period. On the other hand, setting very small discritization period may lead to computation difficulties. Secondly, if we use 0.1 seconds as our period for sampling a discrete version of the system, using horizon 10 represents that we want to predict into the incoming second. Balancing the tradeoff between the need for fast computation and the prediction power, we decided that 10 is appropriate.
+
+As described in the second figure, we associate weight with different cost. In our experiement, we use trail-and-error to obtain the weight. Intuitively, since our goal leans toward staying in the lane, we do not penalize how much power we use our control inputs. Therefore, large weights associating with the cte as well as orientation error are used.
+
+### Other implementation details
+* The reference lanes are calculated using third-order polynomial, which is powerful enough to describe the geometry of the lanes. To obtain the polynomial, we transform the global coordinates (x,y) into local coordinate in the view of the vehicle, that is, we let the moving direction of the car to be the x-axis. 
+
+* Initially, our model performs badly despite a set of parameters are chosen carefully -- see the figure below. 
 ![alt text](https://github.com/Ximingchen/Udacity-Model-Predictive-Control/blob/master/images/badperformance.png)
+
+After examining our code, we found that latency is a huge issue here. More specifically, let s0 be the initial state of the vehicle. The MPC gives us a sequence of control inputs u0, ..., uH assuming the vehicle is at s0.  However, when we try to implement the first control input returned given by MPC, a certain amount has passed, thus the current state is no longer at s0. Subsequently, implementing u0 leads to instability of the system. To overcome this trouble, given the current state s0, we first manually (using program) calculates the state s(L), where L is the amount of latency of the simulator. We then run MPC assuming we are at the initial state s(L). Here, we used the heuristic that the time to calculate the control inputs is approximately L. 
+
+* The optimization problem is solved by IPOPT: https://projects.coin-or.org/Ipopt/.
 
 
 
